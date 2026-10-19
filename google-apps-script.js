@@ -8,7 +8,9 @@
 //
 // SETUP STEPS:
 // 1. Go to https://script.google.com and open your project
-// 2. Delete all code in Code.gs and paste this entire script
+// 2. Paste this entire script into gamaliel-workshop2.gs, and make sure it
+//    is the ONLY .gs file in the project — any other .gs file declaring
+//    doPost / sendConfirmationEmail / SHEET_NAME will override it
 //    (Do NOT nest inside function myFunction — keep at top level)
 // 3. Save (Cmd+S)
 // 4. Verify function dropdown shows: doGet, doPost, getOrCreateSheet,

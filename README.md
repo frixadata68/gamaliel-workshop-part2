@@ -59,11 +59,11 @@ Plus Lab 3 (20 min hands-on in Gamaliel.ai) and Lab 4 (ACTS prayer in pairs), cl
 - [x] **Delivery confirmed** — Lew Cirne facilitates; the page's speaker framing is correct as-is.
 - [x] **`SCRIPT_URL` wired** into both `index.html` and `registrations.html`
       (`.../AKfycbyNwLkf.../exec`).
-- [ ] 🚨 **BLOCKER — a leftover `Code.gs` is overriding the Part 2 code.** The project contains
-      both `Code.gs` (Workshop 2) and `gamaliel-workshop2.gs` (Part 2), and since Apps Script
-      concatenates every `.gs` file into one namespace, `Code.gs` wins. The result: Workshop 2's
-      confirmation email goes out and registrations land in Workshop 2's sheet. **Fix:** delete
-      `Code.gs`, leaving exactly one `.gs` file, then redeploy as **Version: New version**.
+- [ ] 🚨 **BLOCKER — a second `.gs` file is overriding the Part 2 code.** Apps Script concatenates
+      every `.gs` file in a project into one global namespace, so a leftover file from an earlier
+      workshop wins over `gamaliel-workshop2.gs`. The result: the previous workshop's confirmation
+      email goes out and registrations land in its sheet. **Fix:** delete every other `.gs` file so
+      `gamaliel-workshop2.gs` is the only one, then redeploy as **Version: New version**.
       Verify with:
 
       ```bash
@@ -96,17 +96,17 @@ Workshop 1 and Workshop 2 permanently untouched.
 Setup, in the browser:
 
 1. [script.google.com](https://script.google.com) → **New project**, name it `Gamaliel Workshop Part 2`.
-2. Paste all of `google-apps-script.js` in, and make sure it is the **only** `.gs` file in the
-   project — either replace the contents of `Code.gs`, or add your own file and delete `Code.gs`.
-   Keep the functions at top level — do **not** nest them inside `function myFunction() {}`.
+2. Create a file named `gamaliel-workshop2.gs`, paste all of `google-apps-script.js` into it, and
+   delete every other `.gs` file so it is the **only** one in the project. Keep the functions at
+   top level — do **not** nest them inside `function myFunction() {}`.
 
    > ⚠️ **Never leave two `.gs` files that both define `doPost` / `sendConfirmationEmail` /
    > `SHEET_NAME`.** Apps Script has no per-file scope: every `.gs` file is concatenated into one
    > global namespace, and when a function name is declared twice the **last file in order wins**.
-   > A leftover `Code.gs` from a previous workshop will silently override the new code — the
-   > symptom is the previous workshop's confirmation email going out and registrations landing in
-   > the previous workshop's sheet. The function dropdown does *not* reveal this; duplicates each
-   > appear once.
+   > A leftover file from a previous workshop — including the default one a new project starts
+   > with — will silently override `gamaliel-workshop2.gs`. The symptom is the previous workshop's
+   > confirmation email going out and registrations landing in its sheet. The function dropdown
+   > does *not* reveal this; duplicates each appear once.
 3. Save, then confirm the function dropdown lists `doGet`, `doPost`, `getOrCreateSheet`,
    `sendConfirmationEmail`.
 4. **Deploy → New deployment → Web app**, with *Execute as:* **Me** and
