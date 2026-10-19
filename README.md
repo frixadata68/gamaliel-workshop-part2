@@ -58,16 +58,17 @@ Plus Lab 3 (20 min hands-on in Gamaliel.ai) and Lab 4 (ACTS prayer in pairs), cl
 - [x] **End time confirmed** — 12:00–1:30 PM PST, matching the deck's 90-minute run of show.
 - [x] **Delivery confirmed** — Lew Cirne facilitates; the page's speaker framing is correct as-is.
 - [x] **`SCRIPT_URL` wired** into both `index.html` and `registrations.html`
-      (`.../AKfycbyWv0u8.../exec`).
-- [x] **Backend verified isolated** — the deployment returns `{"status":"success","data":[]}`,
-      confirming `gamaliel-workshop2.gs` is the only `.gs` file and `getOrCreateSheet()` created a
-      fresh `GamalielWorkshopRegistrationsPart2`. Re-check any time with:
+      (`.../AKfycbzMMXDV.../exec`).
+- [x] **Backend verified isolated** — `gamaliel-workshop2.gs` is the only `.gs` file, and the
+      deployment reads and writes `GamalielWorkshopRegistrationsPart2`. Re-check any time with:
 
       ```bash
-      curl -sL 'https://script.google.com/macros/s/AKfycbyWv0u8SiTWGbFSqKsOhEDaKrhxUOWlR_3y571maSspwZi1yrnI01R6wO7XMnEjIISFAQ/exec'
+      curl -sL 'https://script.google.com/macros/s/AKfycbzMMXDV86EJAQsT6zoB-e01gMhYnsjKw681QzeUB6-h3rPy4OORYSzMS9untsKp4ObKXg/exec'
       ```
 
-      July 2026 rows coming back would mean a second `.gs` file is shadowing the Part 2 code again.
+      Expect October/November 2026 rows for this workshop. **July 2026 rows coming back would mean
+      a second `.gs` file is shadowing the Part 2 code again** — the failure that sent the first
+      five registrants Workshop 2's 11:00 AM email.
 - [ ] **Verify the Formspree form** — reusing form `mpqvzzlp`.
 
 ## Backend
