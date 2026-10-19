@@ -82,50 +82,31 @@ Plus Lab 3 (20 min hands-on in Gamaliel.ai) and Lab 4 (ACTS prayer in pairs), cl
       five registrants Workshop 2's 11:00 AM email.
 - [ ] **Verify the Formspree form** — reusing form `mpqvzzlp`.
 
-## ⚠️ Known defect: reads and writes can land on different tabs
+## Fixed: reads and writes landing on different tabs
 
-**Status: diagnosed, not fixed (as of October 19, 2026).** Inherited from the Workshop 2 code.
+**Status: fixed in the repo — requires a redeploy to take effect.** Inherited from Workshop 2.
 
-`doPost` and `doGet` both select the tab with `ss.getActiveSheet()`:
+`doPost` and `doGet` both used to select the tab with `ss.getActiveSheet()`. "Active" is stored
+state on the file that changes when anyone clicks a different tab in the browser, so with more
+than one tab a registration could be appended to one tab while `registrations.html` read another.
+With a single tab it was harmless, which is why it stayed invisible for two workshops.
 
-```
-line 215  (doPost)  var sheet = ss.getActiveSheet();   ← writes here
-line 260  (doGet)   var sheet = ss.getActiveSheet();   ← reads here
-```
+**Symptoms seen:** on October 19 the same `/exec` URL returned five October registrations in the
+morning and a single July 11 row hours later. In November, new registrations stopped appearing in
+the admin report entirely while the sheet kept collecting them.
 
-`getActiveSheet()` returns whichever tab is **currently active** — stored state on the file that
-changes when someone clicks a different tab in the browser. With one tab it is harmless, which is
-why it never surfaced before. With more than one, a registration can be appended to one tab while
-`registrations.html` reads another.
+**The fix, in `google-apps-script.js`:**
 
-**Observed symptom:** on October 19 the same `/exec` URL returned five October registrations in
-the morning and a single July 11 row a few hours later — same deployment, same `SHEET_NAME`,
-one file in Drive, nothing in trash.
+- `getWriteTab(ss)` — resolves the append target by **name** (`Registrations`), else the first tab
+  carrying a `Timestamp` header, else creates one. Tab names and tab order are stable; "active" is
+  not. `getActiveSheet()` is no longer called anywhere.
+- `readAllRows(ss)` — the admin report reads the **union of every registration tab**, de-duplicated
+  on timestamp + lowercased email and sorted by timestamp. Rows stranded on another tab by the old
+  behaviour reappear without any manual sheet surgery.
+- Each returned row carries a `_tab` field naming its source tab, so scattering is visible in the
+  raw JSON.
 
-**Until it is fixed:** treat the Google Sheet as the source of truth, not `registrations.html`.
-Check every tab before trusting a headcount.
-
-**Diagnostic** — paste into `gamaliel-workshop2.gs`, select `listTabs`, Run, read the Execution log:
-
-```js
-function listTabs() {
-  var files = DriveApp.getFilesByName(SHEET_NAME);
-  while (files.hasNext()) {
-    var ss = SpreadsheetApp.open(files.next());
-    Logger.log('FILE: ' + ss.getName() + '  →  ' + ss.getUrl());
-    Logger.log('  active tab: "' + ss.getActiveSheet().getName() + '"');
-    var tabs = ss.getSheets();
-    Logger.log('  tab count: ' + tabs.length);
-    for (var i = 0; i < tabs.length; i++) {
-      Logger.log('    [' + i + '] "' + tabs[i].getName() + '"  rows=' + tabs[i].getLastRow());
-    }
-  }
-}
-```
-
-**The fix** is to pin both functions to one explicitly named tab — resolve it by name via
-`ss.getSheetByName(...)`, creating it with headers if absent — so the active-tab state can never
-influence which rows are written or read. Worth doing before promoting the page widely.
+Once redeployed, consolidating tabs by hand is optional — the union read covers it either way.
 
 **Backup:** the five registrations captured on October 19 are saved at
 `~/Downloads/anchored-registrations-backup-2026-10-19.csv` — deliberately outside this repo,

@@ -63,19 +63,85 @@ function getZoomLink() {
   }
 }
 
+var SHEET_TAB = 'Registrations';
+var HEADERS   = ['Timestamp', 'First Name', 'Last Name', 'Email', 'Background'];
+
+/** The spreadsheet FILE. Tab selection is handled separately, on purpose. */
 function getOrCreateSheet() {
   var files = DriveApp.getFilesByName(SHEET_NAME);
-  var ss;
-  if (files.hasNext()) {
-    ss = SpreadsheetApp.open(files.next());
-  } else {
-    ss = SpreadsheetApp.create(SHEET_NAME);
-    var sheet = ss.getActiveSheet();
-    sheet.appendRow(['Timestamp', 'First Name', 'Last Name', 'Email', 'Background']);
-    sheet.getRange(1, 1, 1, 5).setFontWeight('bold');
-    sheet.setFrozenRows(1);
-  }
+  if (files.hasNext()) return SpreadsheetApp.open(files.next());
+
+  var ss = SpreadsheetApp.create(SHEET_NAME);
+  initTab(ss.getSheets()[0]);
   return ss;
+}
+
+function initTab(sheet) {
+  sheet.appendRow(HEADERS);
+  sheet.getRange(1, 1, 1, HEADERS.length).setFontWeight('bold');
+  sheet.setFrozenRows(1);
+  return sheet;
+}
+
+function isRegistrationTab(sheet) {
+  return sheet.getLastRow() > 0 &&
+         String(sheet.getRange(1, 1).getValue()).trim() === 'Timestamp';
+}
+
+/**
+ * The ONE tab registrations are appended to.
+ *
+ * Never use ss.getActiveSheet() here. "Active" is stored state on the file
+ * that changes when anyone clicks a different tab in the browser, so it made
+ * writes and reads drift onto different tabs. Tab order and tab names are
+ * stable, so resolving by name (then by position) is deterministic.
+ */
+function getWriteTab(ss) {
+  var named = ss.getSheetByName(SHEET_TAB);
+  if (named) return named;
+
+  var tabs = ss.getSheets();
+  for (var i = 0; i < tabs.length; i++) {
+    if (isRegistrationTab(tabs[i])) return tabs[i];
+  }
+  return initTab(ss.insertSheet(SHEET_TAB));
+}
+
+/**
+ * Every registration in the file, across ALL tabs, de-duplicated.
+ *
+ * Reading the union rather than one tab means rows stranded on another tab by
+ * the old getActiveSheet() behaviour still show up in the admin report.
+ */
+function readAllRows(ss) {
+  var tabs = ss.getSheets();
+  var rows = [], seen = {};
+
+  for (var t = 0; t < tabs.length; t++) {
+    if (!isRegistrationTab(tabs[t])) continue;
+    var values = tabs[t].getDataRange().getValues();
+    var headers = values[0];
+
+    for (var i = 1; i < values.length; i++) {
+      var row = {};
+      for (var j = 0; j < headers.length; j++) {
+        row[String(headers[j]).trim()] = values[i][j];
+      }
+      if (!row['Timestamp'] && !row['Email']) continue;
+
+      var key = String(row['Timestamp']) + '|' + String(row['Email']).toLowerCase();
+      if (seen[key]) continue;
+      seen[key] = true;
+
+      row['_tab'] = tabs[t].getName();
+      rows.push(row);
+    }
+  }
+
+  rows.sort(function (a, b) {
+    return String(a['Timestamp']) < String(b['Timestamp']) ? -1 : 1;
+  });
+  return rows;
 }
 
 function sendConfirmationEmail(firstName, email) {
@@ -212,7 +278,7 @@ function doPost(e) {
   try {
     var data = JSON.parse(e.postData.contents);
     var ss = getOrCreateSheet();
-    var sheet = ss.getActiveSheet();
+    var sheet = getWriteTab(ss);
 
     var firstName = data.firstName || '';
     var email = data.email || '';
@@ -256,19 +322,7 @@ function doPost(e) {
 
 function doGet(e) {
   try {
-    var ss = getOrCreateSheet();
-    var sheet = ss.getActiveSheet();
-    var data = sheet.getDataRange().getValues();
-
-    var headers = data[0];
-    var rows = [];
-    for (var i = 1; i < data.length; i++) {
-      var row = {};
-      for (var j = 0; j < headers.length; j++) {
-        row[headers[j]] = data[i][j];
-      }
-      rows.push(row);
-    }
+    var rows = readAllRows(getOrCreateSheet());
 
     return ContentService
       .createTextOutput(JSON.stringify({ status: 'success', data: rows }))
