@@ -48,8 +48,19 @@ Plus Lab 3 (20 min hands-on in Gamaliel.ai) and Lab 4 (ACTS prayer in pairs), cl
 
 ## Before this goes live
 
-- [x] **Zoom link set** — `ZOOM_LINK` in `google-apps-script.js`. Confirmed as the correct room
-      for November 13 (same recurring room used for the July workshop).
+- [ ] **Set the `ZOOM_LINK` script property** — Apps Script → Project Settings (⚙) → Script
+      Properties → Add script property, name `ZOOM_LINK`, value the Zoom join URL. The link is
+      deliberately **not** in this repo; `getZoomLink()` reads it at send time. Set the property
+      *before* redeploying, or confirmation emails will say the link follows separately.
+- [ ] 🔐 **Rotate the Zoom meeting.** The previous link was a **Personal Meeting ID**
+      (`.../j/7987024723`) with its passcode, published in this repo and in
+      `interview-rubric-workshop` since July. A PMI is permanent, so that exposed every meeting
+      hosted in it, not just this workshop. Schedule November 13 as a new meeting with
+      *Generate Automatically* for the Meeting ID, and enable the **Waiting Room** — that is the
+      real attendance gate. Removing the link from this repo does not undo the leak; git history
+      keeps it. Rotating does.
+      **Note:** rotating invalidates the link in the confirmation emails already delivered to the
+      first four registrants — they need the new link in a follow-up.
 - [x] **Speaker photo** — `LewCirne1.jpg` (162×161) wired into the speaker card. The source is
       already circle-cropped with a white ring, so the `<img>` is scaled to `1.06` to push that
       ring past the clip edge. Remember to `git add` the photo when deploying.
@@ -104,7 +115,9 @@ Setup, in the browser:
    > confirmation email going out and registrations landing in its sheet. The function dropdown
    > does *not* reveal this; duplicates each appear once.
 3. Save, then confirm the function dropdown lists `doGet`, `doPost`, `getOrCreateSheet`,
-   `sendConfirmationEmail`.
+   `getZoomLink`, `sendConfirmationEmail`.
+3b. **Project Settings (⚙) → Script Properties → Add script property**: name `ZOOM_LINK`, value
+   the Zoom join URL. Nothing else needs a secret, and the link never enters the repo.
 4. **Deploy → New deployment → Web app**, with *Execute as:* **Me** and
    *Who has access:* **Anyone** (not "Anyone with Google account").
 5. Authorize when prompted — it needs Drive (write the sheet) and Gmail (send confirmations).

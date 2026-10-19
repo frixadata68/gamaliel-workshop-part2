@@ -18,16 +18,23 @@
 // 5. Deploy > Manage deployments > pencil > Version: New version > Deploy
 // 6. Authorize when prompted (includes Gmail permission for sending emails)
 //
-// ⚠️  BEFORE YOU DEPLOY: set ZOOM_LINK below. Until it is set, the
-//     confirmation email intentionally omits the Zoom button and tells
-//     the registrant the link will follow separately — so a broken link
-//     never goes out to attendees.
+// ⚠️  BEFORE YOU DEPLOY: set the ZOOM_LINK script property.
+//        Project Settings (⚙ in the left sidebar)
+//        > Script Properties > Add script property
+//        Property: ZOOM_LINK
+//        Value:    the full Zoom join URL for this workshop
+//
+//     The Zoom link is deliberately NOT stored in this file, because this
+//     file lives in a public GitHub repo. Until the property is set, the
+//     confirmation email omits the Zoom button and tells the registrant
+//     the link will follow separately — so a broken link never goes out.
 // ============================================================
 
 var SHEET_NAME = 'GamalielWorkshopRegistrationsPart2';
 
 // ── UPDATE THESE FOR EACH WORKSHOP ──
-var ZOOM_LINK     = 'https://us06web.zoom.us/j/7987024723?pwd=9GKaBgbtKFmuOWJ8xwGWb0gyyFDcCX.1&omn=83307645538';   // ⚠️ required before deploying
+// NOTE: the Zoom link is NOT here — it is read from the ZOOM_LINK script
+// property at send time. See getZoomLink() below.
 var WORKSHOP_PAGE = 'https://frixadata68.github.io/gamaliel-workshop-part2/';
 var ADMIN_EMAIL   = 'jfrix01@gmail.com';
 
@@ -41,8 +48,19 @@ var WORKSHOP_START = '12:00 PM PST';
 //     once and the subject line, event details, Zoom fallback, closing line
 //     and admin notification all follow.
 
-function hasZoomLink() {
-  return ZOOM_LINK && ZOOM_LINK.indexOf('PASTE_ZOOM_LINK') === -1;
+/**
+ * The Zoom join URL, read from the ZOOM_LINK script property.
+ * Returns '' if the property is unset or unreadable, which makes the
+ * confirmation email fall back to "your link will arrive separately"
+ * rather than emailing a broken link to every registrant.
+ */
+function getZoomLink() {
+  try {
+    var v = PropertiesService.getScriptProperties().getProperty('ZOOM_LINK');
+    return (v && v.indexOf('http') === 0) ? v : '';
+  } catch (err) {
+    return '';
+  }
 }
 
 function getOrCreateSheet() {
@@ -61,6 +79,9 @@ function getOrCreateSheet() {
 }
 
 function sendConfirmationEmail(firstName, email) {
+  var zoomLink = getZoomLink();
+  var hasZoom  = zoomLink !== '';
+
   var subject = 'You\'re Registered — The Pivot Point Network Workshop: ' + WORKSHOP_DATE;
 
   var htmlBody = '<!DOCTYPE html><html><head><style>' +
@@ -109,8 +130,8 @@ function sendConfirmationEmail(firstName, email) {
     '<div class="detail-row"><span class="detail-label">Date:</span><span class="detail-value">' + WORKSHOP_DATE + '</span></div>' +
     '<div class="detail-row"><span class="detail-label">Time:</span><span class="detail-value">' + WORKSHOP_TIME + '</span></div>' +
     '<div class="detail-row"><span class="detail-label">Where:</span><span class="detail-value">Live via Zoom</span></div>' +
-    (hasZoomLink()
-      ? '<div class="detail-row"><span class="detail-label">Zoom:</span><span class="detail-value"><a href="' + ZOOM_LINK + '">' + ZOOM_LINK + '</a></span></div>'
+    (hasZoom
+      ? '<div class="detail-row"><span class="detail-label">Zoom:</span><span class="detail-value"><a href="' + zoomLink + '">' + zoomLink + '</a></span></div>'
       : '<div class="detail-row"><span class="detail-label">Zoom:</span><span class="detail-value">Your Zoom link will arrive in a separate email before ' + WORKSHOP_DATE + '.</span></div>') +
     '<div class="detail-row"><span class="detail-label">Host:</span><span class="detail-value">Jeff Frix, Moderator &mdash; The Pivot Point Network</span></div>' +
 
@@ -162,9 +183,9 @@ function sendConfirmationEmail(firstName, email) {
     '<li><span class="check">&#10003;</span> Review <a href="https://www.linkedin.com/in/lewcirne/">Lew\'s LinkedIn profile</a> to familiarize yourself with his background.</li>' +
     '</ul>' +
 
-    (hasZoomLink()
+    (hasZoom
       ? '<div style="text-align: center; margin: 28px 0 8px;">' +
-        '<a href="' + ZOOM_LINK + '" class="btn">Join the Zoom Meeting</a>' +
+        '<a href="' + zoomLink + '" class="btn">Join the Zoom Meeting</a>' +
         '</div>'
       : '') +
 
