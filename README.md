@@ -58,21 +58,16 @@ Plus Lab 3 (20 min hands-on in Gamaliel.ai) and Lab 4 (ACTS prayer in pairs), cl
 - [x] **End time confirmed** — 12:00–1:30 PM PST, matching the deck's 90-minute run of show.
 - [x] **Delivery confirmed** — Lew Cirne facilitates; the page's speaker framing is correct as-is.
 - [x] **`SCRIPT_URL` wired** into both `index.html` and `registrations.html`
-      (`.../AKfycbyNwLkf.../exec`).
-- [ ] 🚨 **BLOCKER — a second `.gs` file is overriding the Part 2 code.** Apps Script concatenates
-      every `.gs` file in a project into one global namespace, so a leftover file from an earlier
-      workshop wins over `gamaliel-workshop2.gs`. The result: the previous workshop's confirmation
-      email goes out and registrations land in its sheet. **Fix:** delete every other `.gs` file so
-      `gamaliel-workshop2.gs` is the only one, then redeploy as **Version: New version**.
-      Verify with:
+      (`.../AKfycbyWv0u8.../exec`).
+- [x] **Backend verified isolated** — the deployment returns `{"status":"success","data":[]}`,
+      confirming `gamaliel-workshop2.gs` is the only `.gs` file and `getOrCreateSheet()` created a
+      fresh `GamalielWorkshopRegistrationsPart2`. Re-check any time with:
 
       ```bash
-      curl -sL 'https://script.google.com/macros/s/AKfycbyNwLkfoVUXWlx061CMkaU8MlgIl4y1btrRSWm_ps-yflS6kA7q3zPr0HDUu1s6-4ht/exec'
+      curl -sL 'https://script.google.com/macros/s/AKfycbyWv0u8SiTWGbFSqKsOhEDaKrhxUOWlR_3y571maSspwZi1yrnI01R6wO7XMnEjIISFAQ/exec'
       ```
 
-      A correctly deployed Part 2 script returns `{"status":"success","data":[]}`. Anything with
-      July 2026 rows in it means the old code is still live — paste in the current
-      `google-apps-script.js` and redeploy as **Version: New version**.
+      July 2026 rows coming back would mean a second `.gs` file is shadowing the Part 2 code again.
 - [ ] **Verify the Formspree form** — reusing form `mpqvzzlp`.
 
 ## Backend
