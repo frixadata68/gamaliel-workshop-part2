@@ -34,6 +34,12 @@ var ADMIN_EMAIL   = 'jfrix01@gmail.com';
 var WORKSHOP_TITLE = 'The Gamaliel Project, Part 2: Anchored: Resilience engineering for the soul';
 var WORKSHOP_DATE  = 'Friday, November 13, 2026';
 var WORKSHOP_TIME  = '12:00 – 1:30 PM PST (90 minutes)';
+var WORKSHOP_START = '12:00 PM PST';
+
+// ⚠️  The date and time appear in the email ONLY via the three constants
+//     above. Never hardcode a date or time further down — change it here
+//     once and the subject line, event details, Zoom fallback, closing line
+//     and admin notification all follow.
 
 function hasZoomLink() {
   return ZOOM_LINK && ZOOM_LINK.indexOf('PASTE_ZOOM_LINK') === -1;
@@ -55,7 +61,7 @@ function getOrCreateSheet() {
 }
 
 function sendConfirmationEmail(firstName, email) {
-  var subject = 'You\'re Registered — The Pivot Point Network Workshop: Friday, November 13';
+  var subject = 'You\'re Registered — The Pivot Point Network Workshop: ' + WORKSHOP_DATE;
 
   var htmlBody = '<!DOCTYPE html><html><head><style>' +
     'body { font-family: Arial, Helvetica, sans-serif; background: #f7f5f0; margin: 0; padding: 20px; color: #1a1a18; }' +
@@ -105,7 +111,7 @@ function sendConfirmationEmail(firstName, email) {
     '<div class="detail-row"><span class="detail-label">Where:</span><span class="detail-value">Live via Zoom</span></div>' +
     (hasZoomLink()
       ? '<div class="detail-row"><span class="detail-label">Zoom:</span><span class="detail-value"><a href="' + ZOOM_LINK + '">' + ZOOM_LINK + '</a></span></div>'
-      : '<div class="detail-row"><span class="detail-label">Zoom:</span><span class="detail-value">Your Zoom link will arrive in a separate email before November 13.</span></div>') +
+      : '<div class="detail-row"><span class="detail-label">Zoom:</span><span class="detail-value">Your Zoom link will arrive in a separate email before ' + WORKSHOP_DATE + '.</span></div>') +
     '<div class="detail-row"><span class="detail-label">Host:</span><span class="detail-value">Jeff Frix, Moderator &mdash; The Pivot Point Network</span></div>' +
 
     // Speaker
@@ -162,7 +168,7 @@ function sendConfirmationEmail(firstName, email) {
         '</div>'
       : '') +
 
-    '<p style="font-size: 13px; color: #888780; text-align: center;">See you Friday, November 13 at 12:00 PM PST — bring a laptop or phone.</p>' +
+    '<p style="font-size: 13px; color: #888780; text-align: center;">See you ' + WORKSHOP_DATE + ' at ' + WORKSHOP_START + ' — bring a laptop or phone.</p>' +
     '</div>' +
 
     // Footer
@@ -207,7 +213,7 @@ function doPost(e) {
     MailApp.sendEmail({
       to: ADMIN_EMAIL,
       subject: 'New Workshop Registration: ' + firstName + ' ' + (data.lastName || ''),
-      htmlBody: '<p><strong>New registration for the November 13 workshop (Gamaliel Pt 2):</strong></p>' +
+      htmlBody: '<p><strong>New registration for ' + WORKSHOP_DATE + ' (Anchored — Gamaliel Pt 2):</strong></p>' +
         '<ul>' +
         '<li><strong>Name:</strong> ' + firstName + ' ' + (data.lastName || '') + '</li>' +
         '<li><strong>Email:</strong> ' + email + '</li>' +
