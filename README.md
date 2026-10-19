@@ -82,6 +82,55 @@ Plus Lab 3 (20 min hands-on in Gamaliel.ai) and Lab 4 (ACTS prayer in pairs), cl
       five registrants Workshop 2's 11:00 AM email.
 - [ ] **Verify the Formspree form** — reusing form `mpqvzzlp`.
 
+## ⚠️ Known defect: reads and writes can land on different tabs
+
+**Status: diagnosed, not fixed (as of October 19, 2026).** Inherited from the Workshop 2 code.
+
+`doPost` and `doGet` both select the tab with `ss.getActiveSheet()`:
+
+```
+line 215  (doPost)  var sheet = ss.getActiveSheet();   ← writes here
+line 260  (doGet)   var sheet = ss.getActiveSheet();   ← reads here
+```
+
+`getActiveSheet()` returns whichever tab is **currently active** — stored state on the file that
+changes when someone clicks a different tab in the browser. With one tab it is harmless, which is
+why it never surfaced before. With more than one, a registration can be appended to one tab while
+`registrations.html` reads another.
+
+**Observed symptom:** on October 19 the same `/exec` URL returned five October registrations in
+the morning and a single July 11 row a few hours later — same deployment, same `SHEET_NAME`,
+one file in Drive, nothing in trash.
+
+**Until it is fixed:** treat the Google Sheet as the source of truth, not `registrations.html`.
+Check every tab before trusting a headcount.
+
+**Diagnostic** — paste into `gamaliel-workshop2.gs`, select `listTabs`, Run, read the Execution log:
+
+```js
+function listTabs() {
+  var files = DriveApp.getFilesByName(SHEET_NAME);
+  while (files.hasNext()) {
+    var ss = SpreadsheetApp.open(files.next());
+    Logger.log('FILE: ' + ss.getName() + '  →  ' + ss.getUrl());
+    Logger.log('  active tab: "' + ss.getActiveSheet().getName() + '"');
+    var tabs = ss.getSheets();
+    Logger.log('  tab count: ' + tabs.length);
+    for (var i = 0; i < tabs.length; i++) {
+      Logger.log('    [' + i + '] "' + tabs[i].getName() + '"  rows=' + tabs[i].getLastRow());
+    }
+  }
+}
+```
+
+**The fix** is to pin both functions to one explicitly named tab — resolve it by name via
+`ss.getSheetByName(...)`, creating it with headers if absent — so the active-tab state can never
+influence which rows are written or read. Worth doing before promoting the page widely.
+
+**Backup:** the five registrations captured on October 19 are saved at
+`~/Downloads/anchored-registrations-backup-2026-10-19.csv` — deliberately outside this repo,
+which is public and must never contain registrant email addresses.
+
 ## Backend
 
 The landing page posts to the Google Apps Script (`Content-Type: text/plain` with
