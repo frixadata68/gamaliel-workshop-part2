@@ -332,6 +332,47 @@
       font-size: 11px; color: rgba(245,242,236,0.3);
       text-align: center; margin-top: 12px; line-height: 1.55;
     }
+    /* ── Contribution tiers ── */
+    .pay {
+      display: flex; gap: 22px; align-items: flex-start;
+      background: rgba(227,185,100,0.07);
+      border: 0.5px solid rgba(227,185,100,0.26);
+      border-radius: 12px;
+      padding: 20px; margin-bottom: 24px;
+    }
+    .pay-main { flex: 1; min-width: 0; }
+    .pay-label {
+      font-size: 11px; font-weight: 500;
+      letter-spacing: 0.08em; text-transform: uppercase;
+      color: #e3b964; margin-bottom: 14px;
+    }
+    .tier { display: flex; gap: 12px; align-items: baseline; margin-bottom: 11px; }
+    .tier:last-of-type { margin-bottom: 0; }
+    .tier-amt {
+      font-family: 'Lora', Georgia, serif;
+      font-size: 17px; font-weight: 600;
+      color: #e3b964; min-width: 54px; flex-shrink: 0;
+    }
+    .tier-amt.is-free { color: rgba(245,242,236,0.82); }
+    .tier-txt { font-size: 13px; color: rgba(245,242,236,0.72); line-height: 1.6; }
+    .tier-txt strong { color: #f5f2ec; font-weight: 500; }
+    .pay-who {
+      font-size: 11px; color: rgba(245,242,236,0.42); line-height: 1.5;
+      margin-top: 14px; padding-top: 12px;
+      border-top: 0.5px solid rgba(255,255,255,0.1);
+    }
+    .pay-qr { flex-shrink: 0; text-align: center; }
+    .pay-qr img {
+      width: 116px; height: 116px; display: block;
+      background: #fff; border-radius: 8px; padding: 6px;
+      /* keep QR modules crisp when scaled, so it stays scannable */
+      image-rendering: pixelated;
+    }
+    .pay-qr-cap {
+      display: block; font-size: 11px;
+      color: rgba(245,242,236,0.45); margin-top: 8px;
+    }
+
     .reg-error {
       font-size: 13px; color: #f0a9a9;
       background: rgba(176,64,64,0.14);
@@ -369,6 +410,8 @@
       .reg-row { grid-template-columns: 1fr; }
       .reg-card { padding: 24px 20px; }
       .speaker-header { flex-direction: column; align-items: flex-start; }
+      .pay { flex-direction: column; align-items: center; gap: 18px; }
+      .pay-main { width: 100%; }
       .stack-item { flex-direction: column; gap: 10px; }
       .stack-badge { min-width: 0; }
     }
@@ -624,6 +667,26 @@
     <h2 class="section-title">Reserve Your Spot</h2>
     <div class="reg-card">
       <p class="reg-intro">Seats are limited, and the labs work best in a room that shows up ready. Fill out the form below and we&rsquo;ll send your Zoom link and a reminder before November 13.</p>
+
+      <div class="pay">
+        <div class="pay-main">
+          <p class="pay-label">Support this workshop</p>
+          <div class="tier">
+            <div class="tier-amt">$25</div>
+            <div class="tier-txt"><strong>Employed?</strong> A suggested contribution &mdash; it keeps these workshops running.</div>
+          </div>
+          <div class="tier">
+            <div class="tier-amt is-free">Free</div>
+            <div class="tier-txt"><strong>In transition?</strong> Attend free. No questions, nothing to explain.</div>
+          </div>
+          <p class="pay-who">Contributions go by Zelle to Jeff Frix &amp; Caroline De Vega-Frix &middot; account ending 3824. Giving is never checked against registration &mdash; your seat is confirmed either way.</p>
+        </div>
+        <div class="pay-qr">
+          <img src="zelle-qr.png" alt="Zelle QR code for contributing to The Pivot Point Network" />
+          <span class="pay-qr-cap">Scan to give</span>
+        </div>
+      </div>
+
       <div id="form-content">
         <div class="reg-row">
           <div>
@@ -652,7 +715,7 @@
         <input type="text" id="regcode" name="regcode" placeholder="Enter your workshop code" autocomplete="off" />
         <button class="submit-btn" type="button" onclick="handleSubmit()">Register for the Workshop</button>
         <p class="reg-error" id="reg-error" hidden>Registration isn&rsquo;t open yet &mdash; this page isn&rsquo;t connected to its registration backend. Please let Jeff know rather than trying again.</p>
-        <p class="reg-note">This is a free virtual event. A Zoom link will be emailed to you before November 13, 2026.</p>
+        <p class="reg-note">Free to attend &mdash; contributing is optional and never checked. A Zoom link will be emailed to you before November 13, 2026.</p>
       </div>
       <div class="success-msg" id="success-msg">
         <div class="check-circle">
@@ -669,7 +732,7 @@
   <!-- Footer -->
   <div class="footer">
     Hosted by <strong>Jeff Frix</strong> &nbsp;&middot;&nbsp; Moderator, The Pivot Point Network<br>
-    Free virtual workshop &nbsp;&middot;&nbsp; Friday, November 13, 2026 &nbsp;&middot;&nbsp; 12:00 &ndash; 1:30 PM PST &nbsp;&middot;&nbsp; Live via Zoom<br>
+    Free to attend &nbsp;&middot;&nbsp; $25 suggested if you&rsquo;re working &nbsp;&middot;&nbsp; Friday, November 13, 2026 &nbsp;&middot;&nbsp; 12:00 &ndash; 1:30 PM PST &nbsp;&middot;&nbsp; Live via Zoom<br>
     Gamaliel.ai is a free, open initiative of the Gamaliel Stewardship Foundation, a 501(c)(3) nonprofit.
   </div>
 
