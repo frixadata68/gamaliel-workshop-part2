@@ -173,6 +173,11 @@ function sendConfirmationEmail(firstName, email) {
     '.checklist li:last-child { border-bottom: none; }' +
     '.check { color: #8a6410; font-weight: bold; margin-right: 8px; }' +
     '.btn { display: inline-block; background: #8a6b1f; color: #ffffff; text-decoration: none; padding: 12px 28px; border-radius: 8px; font-size: 15px; font-weight: bold; margin: 8px 0; }' +
+    '.support { background: #fdf7e8; border: 1px solid #e8d9b0; border-radius: 10px; padding: 18px; margin: 16px 0; }' +
+    '.support p { font-size: 14px; color: #4a4a46; line-height: 1.65; margin: 0 0 10px; }' +
+    '.support p.note { font-size: 12px; color: #888780; margin: 12px 0 0; }' +
+    '.support .amt { color: #8a6410; font-weight: bold; }' +
+    '.qr { display: block; width: 116px; height: 116px; border: 1px solid #e0ddd6; border-radius: 8px; }' +
     '.footer { padding: 20px 28px; border-top: 1px solid #e0ddd6; text-align: center; font-size: 12px; color: #888780; line-height: 1.7; }' +
     'a { color: #8a6410; }' +
     '</style></head><body>' +
@@ -248,6 +253,17 @@ function sendConfirmationEmail(firstName, email) {
     '<li><span class="check">&#10003;</span> Come with <strong>3 thoughtful, insightful questions</strong> prepared for Lew — the more specific, the better.</li>' +
     '<li><span class="check">&#10003;</span> Review <a href="https://www.linkedin.com/in/lewcirne/">Lew\'s LinkedIn profile</a> to familiarize yourself with his background.</li>' +
     '</ul>' +
+
+    // Support — a soft ask placed after the value, not before it
+    '<h2>Support this workshop</h2>' +
+    '<div class="support">' +
+    '<p><span class="amt">Employed? $25 suggested</span> &mdash; your contribution keeps these workshops running.</p>' +
+    '<p><span class="amt">In transition? Attend free</span> &mdash; no questions, nothing to explain.</p>' +
+    '<p style="text-align: center; margin: 16px 0 0;">' +
+    '<img class="qr" src="' + WORKSHOP_PAGE + 'zelle-qr.png" alt="Zelle QR code — scan with your phone to contribute" />' +
+    '</p>' +
+    '<p class="note">Scan the code above with your phone, or send by Zelle to Jeff Frix &amp; Caroline De Vega-Frix (account ending 3824). Giving is never checked against registration &mdash; your seat is confirmed either way.</p>' +
+    '</div>' +
 
     (hasZoom
       ? '<div style="text-align: center; margin: 28px 0 8px;">' +
