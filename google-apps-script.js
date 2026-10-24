@@ -30,6 +30,11 @@
 //     the link will follow separately — so a broken link never goes out.
 // ============================================================
 
+// Bump when this file changes. doGet echoes it, so you can confirm which
+// version is actually deployed without guessing:
+//   curl -sL '<web app /exec url>' | head -c 120
+var SCRIPT_VERSION = '2026-10-24-tabs-tiers';
+
 var SHEET_NAME = 'GamalielWorkshopRegistrationsPart2';
 
 // ── UPDATE THESE FOR EACH WORKSHOP ──
@@ -341,7 +346,7 @@ function doGet(e) {
     var rows = readAllRows(getOrCreateSheet());
 
     return ContentService
-      .createTextOutput(JSON.stringify({ status: 'success', data: rows }))
+      .createTextOutput(JSON.stringify({ status: 'success', version: SCRIPT_VERSION, data: rows }))
       .setMimeType(ContentService.MimeType.JSON);
   } catch (err) {
     return ContentService
