@@ -267,7 +267,7 @@ function sendConfirmationEmail(firstName, email) {
     '<p style="text-align: center; margin: 16px 0 0;">' +
     '<img class="qr" src="' + WORKSHOP_PAGE + 'zelle-qr.png" alt="Zelle QR code — scan from inside your bank app to contribute" />' +
     '</p>' +
-    '<p class="note"><strong>Open Zelle inside your bank&rsquo;s app, then scan the code above</strong> &mdash; a phone camera will only open Zelle&rsquo;s website, not a payment. Goes to Jeff Frix &amp; Caroline De Vega-Frix (account ending 3824). Giving is never checked against registration &mdash; your seat is confirmed either way.</p>' +
+    '<p class="note"><strong>Open Zelle inside your bank&rsquo;s app, then scan the code above</strong> &mdash; a phone camera will only open Zelle&rsquo;s website, not a payment. Goes to Jeff Frix, using phone number ending in 3824. Giving is never checked against registration &mdash; your seat is confirmed either way.</p>' +
     '</div>' +
 
     (hasZoom
